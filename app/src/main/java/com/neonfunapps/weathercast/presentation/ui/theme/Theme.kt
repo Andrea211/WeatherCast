@@ -1,4 +1,4 @@
-package com.neonfunapps.weathercast.ui.theme
+package com.neonfunapps.weathercast.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

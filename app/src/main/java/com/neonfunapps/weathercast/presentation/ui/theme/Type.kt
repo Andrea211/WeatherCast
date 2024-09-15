@@ -1,4 +1,4 @@
-package com.neonfunapps.weathercast.ui.theme
+package com.neonfunapps.weathercast.presentation.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
