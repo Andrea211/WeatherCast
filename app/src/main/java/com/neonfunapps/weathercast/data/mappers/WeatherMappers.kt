@@ -1,8 +1,10 @@
 package com.neonfunapps.weathercast.data.mappers
 
+import com.neonfunapps.weathercast.data.remote.CityCoordinatesDto
 import com.neonfunapps.weathercast.domain.weather.WeatherData
 import com.neonfunapps.weathercast.data.remote.HourlyWeatherDataDto
 import com.neonfunapps.weathercast.data.remote.WeatherDto
+import com.neonfunapps.weathercast.domain.weather.CityCoordinatesInfo
 import com.neonfunapps.weathercast.domain.weather.WeatherInfo
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -38,4 +40,12 @@ fun WeatherDto.toWeatherInfo(): WeatherInfo {
         weatherDataPerDay = weatherDataMap,
         currentWeatherData = currentWeatherData,
     )
+}
+
+fun CityCoordinatesDto.toCityCoordinatesInfo(): CityCoordinatesInfo {
+    return CityCoordinatesInfo(
+            latitude = this.results[0].latitude,
+            longitude = this.results[0].longitude,
+        )
+
 }

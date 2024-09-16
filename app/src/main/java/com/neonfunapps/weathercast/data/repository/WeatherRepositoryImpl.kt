@@ -1,14 +1,18 @@
 package com.neonfunapps.weathercast.data.repository
 
+import com.neonfunapps.weathercast.data.mappers.toCityCoordinatesInfo
 import com.neonfunapps.weathercast.data.mappers.toWeatherInfo
+import com.neonfunapps.weathercast.data.remote.GeocodingWeatherApi
 import com.neonfunapps.weathercast.data.remote.WeatherApi
 import com.neonfunapps.weathercast.domain.repository.WeatherRepository
 import com.neonfunapps.weathercast.domain.util.Resource
+import com.neonfunapps.weathercast.domain.weather.CityCoordinatesInfo
 import com.neonfunapps.weathercast.domain.weather.WeatherInfo
 import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
-    private val api: WeatherApi
+    private val weatherApi: WeatherApi,
+    private val geocodingWeatherApi: GeocodingWeatherApi,
 ) : WeatherRepository {
 
     override suspend fun getWeatherData(
@@ -17,10 +21,23 @@ class WeatherRepositoryImpl @Inject constructor(
     ): Resource<WeatherInfo> {
         return try {
             Resource.Success(
-                data = api.getWeatherData(
+                data = weatherApi.getWeatherData(
                     latitude = latitude,
                     longitude = longitude,
                 ).toWeatherInfo()
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.message ?: "Error while getting weather data")
+        }
+    }
+
+    override suspend fun getCityCoordinates(
+        city: String,
+    ): Resource<CityCoordinatesInfo> {
+        return try {
+            Resource.Success(
+                data = geocodingWeatherApi.getCityCoordinates(city = city).toCityCoordinatesInfo()
             )
         } catch (e: Exception) {
             e.printStackTrace()

@@ -21,6 +21,27 @@ class WeatherViewModel @Inject constructor(
     var state by mutableStateOf(WeatherState())
         private set
 
+    fun getCoordinatesForCity(city: String) {
+        viewModelScope.launch {
+            state = state.copy(
+                city = city,
+            )
+            repository.getCityCoordinates(city).let { coordinates ->
+                coordinates.data?.let { data ->
+                    state = state.copy(
+                        city = city,
+                        cityCoordinates = Pair(data.latitude, data.longitude),
+                    )
+                }
+            } ?: kotlin.run {
+                state = state.copy(
+                    isLoading = false,
+                    error = "Couldn't retrieve city coordinates."
+                )
+            }
+        }
+    }
+
     fun loadWeatherInfo() {
         viewModelScope.launch {
             state = state.copy(
