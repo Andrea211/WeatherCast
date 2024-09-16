@@ -23,6 +23,8 @@ fun HourlyWeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> {
                 pressure = pressureList[index],
                 windSpeed = windSpeedList[index],
                 humidity = humidityList[index],
+                apparentTemperature = apparentTemperatureList[index],
+                rain = rainList[index],
             )
         )
     }.groupBy {
