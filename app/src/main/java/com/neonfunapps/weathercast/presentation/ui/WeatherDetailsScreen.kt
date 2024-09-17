@@ -106,13 +106,21 @@ fun WeatherIconAndDescription(weatherInfo: WeatherInfo?) {
 
 @Composable
 fun Temperature(weatherInfo: WeatherInfo?) {
+    val temperatureCelsius =
+        weatherInfo?.currentWeatherData?.temperatureCelsius?.substring(0, 2)?.toInt() ?: 0
+    val textColor = when {
+        temperatureCelsius < 10 -> Color.Blue
+        temperatureCelsius in 10..20 -> Color.Gray
+        else -> Color.Red
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = weatherInfo?.currentWeatherData?.temperatureCelsius.toString(),
             fontSize = 64.sp,
-            color = Color.White,
+            color = textColor,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.width(8.dp))
