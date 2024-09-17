@@ -40,8 +40,6 @@ fun WeatherDetailsScreen(viewModel: WeatherViewModel, city: String?) {
     }
 
     val weatherInfo = remember { viewModel.state.weatherInfo }
-    val cityName = remember { viewModel.state.city }
-
     val scrollState = rememberScrollState()
 
     Column(
@@ -58,7 +56,7 @@ fun WeatherDetailsScreen(viewModel: WeatherViewModel, city: String?) {
             .padding(16.dp, 32.dp, 16.dp, 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DateAndCity(weatherInfo, cityName)
+        DateAndCity(weatherInfo, city)
         Spacer(modifier = Modifier.height(16.dp))
 
         WeatherIconAndDescription(weatherInfo)
