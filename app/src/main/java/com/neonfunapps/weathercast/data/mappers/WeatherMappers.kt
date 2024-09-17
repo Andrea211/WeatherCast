@@ -4,8 +4,13 @@ import com.neonfunapps.weathercast.data.remote.CityCoordinatesDto
 import com.neonfunapps.weathercast.domain.weather.WeatherData
 import com.neonfunapps.weathercast.data.remote.HourlyWeatherDataDto
 import com.neonfunapps.weathercast.data.remote.WeatherDto
+import com.neonfunapps.weathercast.data.utils.formatDate
+import com.neonfunapps.weathercast.data.utils.formatDataExpressedAsPercentages
+import com.neonfunapps.weathercast.data.utils.formatTemperature
+import com.neonfunapps.weathercast.data.utils.formatWindSpeed
 import com.neonfunapps.weathercast.domain.weather.CityCoordinatesInfo
 import com.neonfunapps.weathercast.domain.weather.WeatherInfo
+import com.neonfunapps.weathercast.domain.weather.WeatherType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -19,12 +24,14 @@ fun HourlyWeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> {
         IndexedWeatherData(
             index = index, data = WeatherData(
                 time = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME),
-                temperatureCelsius = temperatureList[index],
+                formattedDate = formatDate(time),
+                temperatureCelsius = formatTemperature(temperatureList[index]),
                 pressure = pressureList[index],
-                windSpeed = windSpeedList[index],
-                humidity = humidityList[index],
-                apparentTemperature = apparentTemperatureList[index],
-                rain = rainList[index],
+                windSpeed = formatWindSpeed(windSpeedList[index]),
+                humidity = formatDataExpressedAsPercentages(humidityList[index]),
+                apparentTemperature = formatTemperature(apparentTemperatureList[index]),
+                rain = formatDataExpressedAsPercentages(rainList[index]),
+                weatherType = WeatherType.fromWMO(weatherCodeList[index])
             )
         )
     }.groupBy {
