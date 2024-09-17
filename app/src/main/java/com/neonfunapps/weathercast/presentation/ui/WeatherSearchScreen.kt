@@ -1,32 +1,103 @@
 package com.neonfunapps.weathercast.presentation.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.neonfunapps.weathercast.presentation.WeatherViewModel
 
 @Composable
 fun SearchScreen(viewModel: WeatherViewModel, navController: NavHostController) {
     var query by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
 
-    Column {
-        TextField(value = query, onValueChange = { query = it }, label = { Text("Search") })
+    val focusManager = LocalFocusManager.current
 
-        Button(onClick = {
-            if (query.isNotEmpty()) {
-                val cityName = query.lowercase().replaceFirstChar { it.uppercase() }
-                navController.navigate("details/$cityName")
-                viewModel.loadWeatherInfo()
-            }
-        }) {
-            Text("Search")
+    fun isCityNameValid(text: String): Boolean {
+        return text.matches("^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ ]+$".toRegex())
+    }
+
+    fun performSearch() {
+        if (query.isNotEmpty() && !isError) {
+            val cityName = query.lowercase().replaceFirstChar { it.uppercase() }
+            navController.navigate("details/$cityName")
+            viewModel.loadWeatherInfo()
+            focusManager.clearFocus()
         }
     }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp, 32.dp, 16.dp, 16.dp)
+            .clickable(onClick = { focusManager.clearFocus() },
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() })
+    ) {
+        SearchTextField(query = query, isError = isError, onQueryChanged = { newQuery ->
+            query = newQuery
+            isError = newQuery.isNotEmpty() && !isCityNameValid(newQuery)
+        }, onSearchClicked = { performSearch() })
+    }
+}
+
+@Composable
+fun SearchTextField(
+    query: String, isError: Boolean, onQueryChanged: (String) -> Unit, onSearchClicked: () -> Unit
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChanged,
+        label = { Text("Search") },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        isError = isError,
+        supportingText = {
+            if (isError) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = "Invalid input: only letters and Polish characters allowed.",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+        trailingIcon = {
+            IconButton(onClick = {
+                if (!isError) onSearchClicked()
+            }) {
+                Icon(
+                    imageVector = if (isError) Icons.Default.Warning else Icons.Default.Search,
+                    contentDescription = "Search Icon"
+                )
+            }
+        },
+        keyboardActions = KeyboardActions(onDone = {
+            if (!isError) onSearchClicked()
+        }),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done
+        )
+    )
 }
