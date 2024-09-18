@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -21,6 +23,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val keystoreFile = project.rootProject.file("apikeys.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+
+        buildConfigField(
+            type = "String",
+            name = "WireFreeThought_API_KEY",
+            value = properties.getProperty("WireFreeThought_API_KEY") ?: ""
+        )
     }
 
     buildTypes {
@@ -41,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

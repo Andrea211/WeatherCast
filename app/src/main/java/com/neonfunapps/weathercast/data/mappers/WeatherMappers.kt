@@ -1,6 +1,7 @@
 package com.neonfunapps.weathercast.data.mappers
 
 import com.neonfunapps.weathercast.data.remote.CityCoordinatesDto
+import com.neonfunapps.weathercast.data.remote.SuggestedCitiesDto
 import com.neonfunapps.weathercast.domain.weather.WeatherData
 import com.neonfunapps.weathercast.data.remote.HourlyWeatherDataDto
 import com.neonfunapps.weathercast.data.remote.WeatherDto
@@ -9,6 +10,7 @@ import com.neonfunapps.weathercast.data.utils.formatDataExpressedAsPercentages
 import com.neonfunapps.weathercast.data.utils.formatTemperature
 import com.neonfunapps.weathercast.data.utils.formatWindSpeed
 import com.neonfunapps.weathercast.domain.weather.CityCoordinatesInfo
+import com.neonfunapps.weathercast.domain.weather.SuggestedCityInfo
 import com.neonfunapps.weathercast.domain.weather.WeatherInfo
 import com.neonfunapps.weathercast.domain.weather.WeatherType
 import java.time.LocalDateTime
@@ -59,4 +61,14 @@ fun CityCoordinatesDto.toCityCoordinatesInfo(): CityCoordinatesInfo {
             longitude = this.results[0].longitude,
         )
 
+}
+
+fun SuggestedCitiesDto.toCityInfo(): List<SuggestedCityInfo> {
+    return this.suggestedCitiesData.map {
+        SuggestedCityInfo(
+            name = it.name,
+            country = it.country,
+            region = it.region
+        )
+    }
 }

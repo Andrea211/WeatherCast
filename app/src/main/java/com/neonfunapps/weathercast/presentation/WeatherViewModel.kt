@@ -21,6 +21,26 @@ class WeatherViewModel @Inject constructor(
     var state by mutableStateOf(WeatherState())
         private set
 
+    fun getListOfSuggestedCities(cityNamePrefix: String) {
+        viewModelScope.launch {
+            state = when (val result = repository.getListOfSuggestedCities(cityNamePrefix)) {
+                is Resource.Success -> {
+                    state.copy(
+                        listOfSuggestedCities = result.data?.map {
+                            Triple(it.name, it.country, it.region)
+                        } ?: emptyList(),
+                        isLoading = false)
+                }
+                is Resource.Error -> {
+                    state.copy(
+                        isLoading = false,
+                        error = result.message ?: "Couldn't fetch city suggestions."
+                    )
+                }
+            }
+        }
+    }
+
     fun getCoordinatesForCity(city: String) {
         viewModelScope.launch {
             state = state.copy(

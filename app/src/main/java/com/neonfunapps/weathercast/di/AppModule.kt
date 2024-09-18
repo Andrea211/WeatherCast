@@ -5,6 +5,7 @@ import com.neonfunapps.weathercast.data.remote.WeatherApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.neonfunapps.weathercast.data.remote.GeocodingWeatherApi
+import com.neonfunapps.weathercast.data.remote.WireFreeThoughtApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -39,6 +40,16 @@ object AppModule {
     fun provideGeocodingWeatherApi(): GeocodingWeatherApi {
         return Retrofit.Builder()
             .baseUrl("https://geocoding-api.open-meteo.com/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWireFreeThoughtApi(): WireFreeThoughtApi {
+        return Retrofit.Builder()
+            .baseUrl("https://wft-geo-db.p.rapidapi.com/")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create()

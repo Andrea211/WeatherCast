@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +51,12 @@ fun SearchScreen(viewModel: WeatherViewModel, navController: NavHostController) 
         }
     }
 
+    LaunchedEffect(query) {
+        if (query.isNotEmpty() && !isError) {
+            viewModel.getListOfSuggestedCities(query)
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +69,29 @@ fun SearchScreen(viewModel: WeatherViewModel, navController: NavHostController) 
             query = newQuery
             isError = newQuery.isNotEmpty() && !isCityNameValid(newQuery)
         }, onSearchClicked = { performSearch() })
+
+        if (viewModel.state.listOfSuggestedCities?.isNotEmpty() == true && query.isNotEmpty()) {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                items(viewModel.state.listOfSuggestedCities ?: emptyList()) { cityTriple ->
+                    CitySuggestionItem(city = cityTriple.first, country = cityTriple.second) {
+                        query = cityTriple.first
+                        performSearch()
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CitySuggestionItem(city: String, country: String, onCitySelected: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCitySelected() }
+            .padding(8.dp)
+    ) {
+        Text(text = "$city, $country")
     }
 }
 
