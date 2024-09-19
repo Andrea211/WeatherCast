@@ -58,7 +58,7 @@ fun MyApp(viewModel: WeatherViewModel) {
             SearchScreen(viewModel, navController)
         }
         composable("details/{city}") { backStackEntry ->
-            WeatherDetailsScreen(viewModel, backStackEntry.arguments?.getString("city"))
+            WeatherDetailsScreen(navController, viewModel, backStackEntry.arguments?.getString("city"))
         }
     }
 }

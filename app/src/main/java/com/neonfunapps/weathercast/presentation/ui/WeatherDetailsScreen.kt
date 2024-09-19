@@ -15,7 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -29,12 +33,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.neonfunapps.weathercast.R
 import com.neonfunapps.weathercast.domain.weather.WeatherInfo
 import com.neonfunapps.weathercast.presentation.WeatherViewModel
 
 @Composable
-fun WeatherDetailsScreen(viewModel: WeatherViewModel, city: String?) {
+fun WeatherDetailsScreen(navController: NavController, viewModel: WeatherViewModel, city: String?) {
     LaunchedEffect(city) {
         city?.let { viewModel.getCoordinatesForCity(it) }
     }
@@ -56,7 +61,7 @@ fun WeatherDetailsScreen(viewModel: WeatherViewModel, city: String?) {
             .padding(16.dp, 32.dp, 16.dp, 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        DateAndCity(weatherInfo, city)
+        DateAndCity(navController, weatherInfo, city)
         Spacer(modifier = Modifier.height(16.dp))
 
         WeatherIconAndDescription(weatherInfo)
@@ -74,18 +79,38 @@ fun WeatherDetailsScreen(viewModel: WeatherViewModel, city: String?) {
 }
 
 @Composable
-fun DateAndCity(weatherInfo: WeatherInfo?, city: String?) {
+fun DateAndCity(navController: NavController, weatherInfo: WeatherInfo?, city: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = weatherInfo?.currentWeatherData?.formattedDate ?: "",
-            fontSize = 18.sp,
-            color = Color.White
-        )
-        Text(
-            text = city ?: "", fontSize = 22.sp, color = Color.White, fontWeight = FontWeight.Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back",
+                    tint = Color.White
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = weatherInfo?.currentWeatherData?.formattedDate ?: "",
+                    fontSize = 18.sp,
+                    color = Color.White
+                )
+                Text(
+                    text = city ?: "",
+                    fontSize = 22.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
